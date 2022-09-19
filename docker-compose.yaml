@@ -1,0 +1,30 @@
+version: '3'
+services:
+  api:
+    image: node:16.13.2
+    ports:
+      - '${API_PORT:-3030}:3030'
+    volumes:
+      - ./sample-api:/usr/local/sample-api
+    working_dir: /usr/local/sample-api
+    tty: true
+    entrypoint: "/bin/sh -c 'yarn install; yarn typeorm migration:run; yarn dev'"
+    depends_on:
+      - db
+  db:
+    image: mysql:8.0.22
+    platform: linux/x86_64
+    ports:
+      - '${DB_PORT:-3306}:3306'
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: sample
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - sample-mysql-data:/var/lib/mysql
+      - ./docker/db:/docker-entrypoint-initdb.d
+
+volumes:
+  sample-mysql-data:
