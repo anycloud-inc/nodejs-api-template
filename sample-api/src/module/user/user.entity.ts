@@ -1,3 +1,4 @@
+import { IsEmail } from 'class-validator'
 import {
   Column,
   CreateDateColumn,
@@ -14,6 +15,7 @@ export class User {
 
   @Column()
   @Index({ unique: true })
+  @IsEmail()
   email!: string
 
   @Column()

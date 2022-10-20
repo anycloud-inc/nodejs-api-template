@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '.env.test' })
 const { doesNotMatch } = require('assert')
 const typeorm = require('typeorm')
 const { createConnection, getConnection } = typeorm
@@ -26,7 +27,6 @@ const db = {
 }
 
 beforeAll(async () => {
-  require('dotenv').config({ path: '.env.test' })
   const connection = await db.create()
   await connection.synchronize()
 })
