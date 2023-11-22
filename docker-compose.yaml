@@ -5,8 +5,8 @@ services:
     ports:
       - '${API_PORT:-3030}:3030'
     volumes:
-      - ./sample-api:/usr/local/sample-api
-    working_dir: /usr/local/sample-api
+      - ./api:/usr/local/api
+    working_dir: /usr/local/api
     tty: true
     entrypoint: "/bin/sh -c 'yarn install; yarn typeorm migration:run; yarn dev'"
     depends_on:

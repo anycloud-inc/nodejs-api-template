@@ -1,5 +1,5 @@
 {
-  "name": "sample-api",
+  "name": "api",
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
@@ -12,7 +12,8 @@
     "typeorm": "TS_NODE_TRANSPILE_ONLY=true yarn ts-node ./node_modules/typeorm/cli.js",
     "gcp-build": "yarn install --force && tsc -p .",
     "start": "node -r ./tsconfig-paths-bootstrap.js dist/src/index.js",
-    "console": "NODE_OPTIONS=--experimental-repl-await yarn ts-node console.ts"
+    "console": "NODE_OPTIONS=--experimental-repl-await yarn ts-node console.ts",
+    "evaluate-model": "yarn ts-node evaluate/evaluateModel.ts"
   },
   "dependencies": {
     "@anycloud/express-controller": "^0.1.1",
