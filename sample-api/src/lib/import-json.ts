@@ -1,8 +1,8 @@
-import { Connection, getConnection } from 'typeorm'
+import { DataSource } from 'typeorm'
 import { readFile } from 'fs'
 
 // jsonファイルからDBにデータをインポートする
-export const importJson = <J>(db: Connection, recipe: ImportRecipe<J>) => {
+export const importJson = <J>(db: DataSource, recipe: ImportRecipe<J>) => {
   return new Promise<void>((resolve, reject) => {
     readFile(recipe.filePath, 'utf-8', async (err, data) => {
       if (err) reject(err)
@@ -26,7 +26,7 @@ export const importJson = <J>(db: Connection, recipe: ImportRecipe<J>) => {
         })
       }
 
-      await getConnection()
+      await db
         .createQueryBuilder()
         .insert()
         .into(recipe.entity)

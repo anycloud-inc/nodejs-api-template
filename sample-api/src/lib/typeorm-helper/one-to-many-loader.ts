@@ -1,6 +1,6 @@
-import { getRepository } from 'typeorm'
 import { leftJoinRelations, RelationWithQuery } from './index'
 import { groupBy } from '../array-utils'
+import { AppDataSource } from 'data-source'
 
 export async function loadRelationsOneToMany(
   entity: string | Function,
@@ -17,7 +17,7 @@ export async function loadRelationsOneToMany(
 
   let qb =
     typeof relation === 'string' || relation.qb == null
-      ? getRepository(entity).createQueryBuilder(name)
+      ? AppDataSource.getRepository(entity).createQueryBuilder(name)
       : relation.qb
 
   if (typeof relation !== 'string' && relation.joins != null) {
@@ -39,7 +39,7 @@ function _getRefKey(
   targetEntityName: string,
   relation: string
 ): string | undefined {
-  return getRepository(entity).metadata.relations.find(
+  return AppDataSource.getRepository(entity).metadata.relations.find(
     r =>
       r.inverseSidePropertyPath === relation &&
       (r.type as Function).name === targetEntityName

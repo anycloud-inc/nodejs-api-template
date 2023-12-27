@@ -1,17 +1,18 @@
 import {
-  EntityManager,
   EntityTarget,
-  getConnection,
-  getManager,
-  getRepository,
+  ObjectLiteral,
   InsertQueryBuilder,
   SelectQueryBuilder,
+  FindOptionsWhere,
+  FindOneOptions,
+  FindOptionsRelations
 } from 'typeorm'
 import { camelize } from 'humps'
 import { RelationMetadata } from 'typeorm/metadata/RelationMetadata'
 import { loadRelationsManyToMany } from './many-to-many-loader'
 import { loadRelationsOneToMany } from './one-to-many-loader'
 import { loadRelationsToOne } from './to-one-loader'
+import { AppDataSource } from 'data-source'
 
 export interface RelationWithQuery {
   name: string
@@ -19,15 +20,14 @@ export interface RelationWithQuery {
   joins?: string[]
   refKey?: string
 }
-
 // リレーション別にクエリを発行する
 // helper method to resolve https://github.com/typeorm/typeorm/issues/3857
-export async function findWithRelations<T extends any>(
+export async function findWithRelations<T extends ObjectLiteral>(
   entityClass: new () => T,
   id: number | string,
   relations: Array<string | RelationWithQuery>
 ): Promise<T | null> {
-  const repo = getRepository<T>(entityClass)
+  const repo = AppDataSource.getRepository(entityClass)
   const toOneRelations = repo.metadata.manyToOneRelations
     .concat(repo.metadata.oneToOneRelations)
     .map(r => r.propertyName)
@@ -38,9 +38,17 @@ export async function findWithRelations<T extends any>(
 
   const names = relations.map(r => (typeof r === 'string' ? r : r.name))
 
+  const relationItems: { [key: string]: boolean } = {};
+  names.forEach(n => {
+    if (toOneRelations.includes(n)) {
+      relationItems[n] = true;
+    }
+  });
+
   // to-one relation を取得
-  const item = await getRepository<T>(entityClass).findOne(id, {
-    relations: names.filter(n => toOneRelations.includes(n)),
+  const item = await AppDataSource.getRepository(entityClass).findOne({
+    where: { id: id } as unknown as FindOptionsWhere<T>,
+    relations: relationItems as unknown as FindOptionsRelations<T>,
   })
   if (!item) return null
 
@@ -119,7 +127,7 @@ export async function loadRelations(
 function _getRelationsMap(entityName: string): {
   [k: string]: RelationMetadata
 } {
-  const repo = getRepository(entityName)
+  const repo = AppDataSource.getRepository(entityName)
   return repo.metadata.relations.reduce<{ [key: string]: RelationMetadata }>(
     (acc, r) => {
       acc[r.propertyName] = r
@@ -134,7 +142,7 @@ function _getRelationsMap(entityName: string): {
 // qb.leftJoinAndSelect('xxx.text', 'text)
 //   .leftJoinAndSelect('text.metadata', 'textMetadata')
 // ```
-export function leftJoinRelations<T>(
+export function leftJoinRelations<T extends ObjectLiteral>(
   qb: SelectQueryBuilder<T>,
   relations: string[]
 ): SelectQueryBuilder<T> {
@@ -154,7 +162,7 @@ export function leftJoinRelations<T>(
   return qb
 }
 
-export async function runInBatch<T>(
+export async function runInBatch<T extends ObjectLiteral>(
   qb: SelectQueryBuilder<T>,
   callback: (items: T[]) => Promise<void>,
   { perPage = 500 } = {}
@@ -176,18 +184,18 @@ export async function runInBatch<T>(
   }
 }
 
-export async function bulkInsertWithMultipleKeys(
+export async function bulkInsertWithMultipleKeys<T extends ObjectLiteral>(
   iqb: InsertQueryBuilder<any>,
-  { em = getManager() } = {}
+  entityClass: EntityTarget<T>,
 ): Promise<void> {
   const [sql, parameters] = iqb.getQueryAndParameters()
   // typeormでは複合キーでのバルクアップデートができないようなので、SQLを直接実行
   // typeorm内での返り値の組み立て方法に問題があると思われる
-  await em.query(sql, parameters)
+  await AppDataSource.getRepository(entityClass).query(sql, parameters)
 }
 
-export function getCols<T>(entityClass: EntityTarget<T>): (keyof T)[] {
-  return getRepository(entityClass).metadata.columns.map(
+export function getCols<T extends ObjectLiteral>(entityClass: EntityTarget<T>): (keyof T)[] {
+  return AppDataSource.getRepository(entityClass).metadata.columns.map(
     col => col.propertyName
   ) as (keyof T)[]
 }
