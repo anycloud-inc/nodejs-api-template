@@ -17,11 +17,6 @@ export const AppDataSource = new DataSource({
   entities: [process.env.DB_TYPEORM_ENTITIES || 'src/**/*.entity.ts'],
   migrations: [process.env.DB_TYPEORM_MIGRATIONS || 'src/migration/**/*.ts'],
   subscribers: [process.env.DB_TYPEORM_SUBSCRIBERS || 'src/subscriber/**/*.ts'],
-  // cli: {
-  //   entitiesDir: 'src/entity',
-  //   migrationsDir: 'src/migration',
-  //   subscribersDir: 'src/subscriber',
-  // },
   extra: {
     charset: 'utf8mb4',
     socketPath: process.env.DB_SOCKET_PATH,
