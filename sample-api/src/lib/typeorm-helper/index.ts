@@ -47,8 +47,8 @@ export async function findWithRelations<T extends ObjectLiteral>(
 
   // to-one relation を取得
   const item = await AppDataSource.getRepository(entityClass).findOne({
-    where: { id: id } as unknown as FindOptionsWhere<T>,
-    relations: relationItems as unknown as FindOptionsRelations<T>,
+    where: { id: id } as FindOptionsWhere<ObjectLiteral>,
+    relations: relationItems as FindOptionsRelations<T>,
   })
   if (!item) return null
 
