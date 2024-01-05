@@ -1,9 +1,9 @@
 import * as argon2 from 'argon2'
-import { getRepository } from 'typeorm'
 import { User } from '../user/user.entity'
 import { LoginError, ValidationError } from '../../error'
 import { encodeJwt } from 'src/lib/jwt'
 import { validateOrFail } from 'src/lib/validate'
+import { AppDataSource } from 'data-source'
 
 interface SignupParams {
   email: string
@@ -21,7 +21,7 @@ export const authService = {
     password,
   }: SignupParams): Promise<{ user: User; token: string }> {
     const passwordHashed = await this.hashPassword(password)
-    const repo = getRepository(User)
+    const repo = AppDataSource.getRepository(User)
 
     let user = repo.create({
       email,
@@ -40,7 +40,7 @@ export const authService = {
     email,
     password,
   }: LoginParmas): Promise<{ user: User; token: string }> {
-    const user = await getRepository(User).findOne({ email })
+    const user = await AppDataSource.getRepository(User).findOneBy({ email })
     if (!user) throw new LoginError()
 
     const valid = await this.verifyPassword(user.password, password)

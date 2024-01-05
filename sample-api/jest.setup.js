@@ -1,26 +1,23 @@
 require('dotenv').config({ path: '.env.test' })
-const { doesNotMatch } = require('assert')
-const typeorm = require('typeorm')
-const { createConnection, getConnection } = typeorm
+const { AppDataSource } = require('./data-source.js');
 
 jest.setTimeout(10000)
 
 const db = {
   async create() {
-    const connection = await createConnection()
+    const connection = await AppDataSource.initialize()
     return connection
   },
 
   async close() {
-    await getConnection().close()
+    await AppDataSource.destroy()
   },
 
   async clear() {
-    const connection = getConnection()
-    const entities = connection.entityMetadatas
+    const entities = AppDataSource.entityMetadatas
 
     for (const entity of entities) {
-      const repository = connection.getRepository(entity.name)
+      const repository = AppDataSource.getRepository(entity.name)
       await repository.query(`DELETE FROM ${entity.tableName}`)
     }
   },

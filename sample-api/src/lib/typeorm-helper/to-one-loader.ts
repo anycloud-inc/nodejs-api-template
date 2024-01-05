@@ -1,4 +1,4 @@
-import { getRepository } from 'typeorm'
+import { AppDataSource } from 'data-source'
 import { leftJoinRelations, RelationWithQuery } from './index'
 
 export async function loadRelationsToOne(
@@ -30,7 +30,7 @@ async function _getItems(
   const relationName = typeof relation === 'string' ? relation : relation.name
   let qb =
     typeof relation === 'string' || relation.qb == null
-      ? getRepository(entityName).createQueryBuilder(relationName)
+      ? AppDataSource.getRepository(entityName).createQueryBuilder(relationName)
       : relation.qb
 
   if (typeof relation !== 'string' && relation.joins != null) {
@@ -71,7 +71,7 @@ function _getRefKey(
   { reverse = false } = {}
 ): string | undefined {
   const relationName = typeof relation === 'string' ? relation : relation.name
-  return getRepository(entityName).metadata.relations.find(r => {
+  return AppDataSource.getRepository(entityName).metadata.relations.find(r => {
     const propertyPath = reverse ? r.propertyPath : r.inverseSidePropertyPath
     return (
       propertyPath === relationName &&

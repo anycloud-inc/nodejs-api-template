@@ -1,4 +1,4 @@
-import { SelectQueryBuilder } from 'typeorm'
+import { ObjectLiteral, SelectQueryBuilder } from 'typeorm'
 
 export type Order = 'ASC' | 'DESC'
 
@@ -8,7 +8,7 @@ export interface PaginationParams {
   order?: Order
 }
 
-export async function withPagerPagination<T>(
+export async function withPagerPagination<T extends ObjectLiteral>(
   qb: SelectQueryBuilder<T>,
   { page, size = 50, order = 'DESC' }: PaginationParams
 ): Promise<{ result: T[]; maxPage: number }> {

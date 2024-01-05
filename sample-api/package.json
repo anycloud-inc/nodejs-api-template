@@ -31,7 +31,7 @@
     "mysql": "^2.18.1",
     "reflect-metadata": "^0.1.13",
     "tsconfig-paths": "^3.9.0",
-    "typeorm": "^0.2.29"
+    "typeorm": "^0.3.17"
   },
   "devDependencies": {
     "@types/boom": "^7.3.0",

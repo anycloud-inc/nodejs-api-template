@@ -1,5 +1,5 @@
-import { getRepository } from 'typeorm'
 import { filterKeys } from './object-utils'
+import { AppDataSource } from 'data-source'
 
 // HTTP経由のDB更新用のデータをサニタイズ
 export function sanitizeParams(
@@ -29,13 +29,13 @@ function _formatParams(params: object | null, entityClass: any): object {
 }
 
 function _getColumnType(col: string, entityClass: any): string | undefined {
-  const repo = getRepository(entityClass)
+  const repo = AppDataSource.getRepository(entityClass)
   return repo.metadata.columns.find(item => item.propertyName === col)
     ?.type as string
 }
 
 function _getUpdatableColumns(entityClass: any): string[] {
-  const repo = getRepository(entityClass)
+  const repo = AppDataSource.getRepository(entityClass)
   return repo.metadata.nonVirtualColumns
     .map(col => col.propertyName)
     .filter(col => !['id', 'createdAt', 'updatedAt'].includes(col))

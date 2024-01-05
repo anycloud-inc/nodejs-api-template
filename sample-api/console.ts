@@ -1,16 +1,17 @@
+import { AppDataSource } from './data-source';
 import * as repl from 'repl'
 import * as glob from 'glob'
-import { createConnection, getRepository } from 'typeorm'
 
 console.log('connecting to detabase...')
-createConnection()
+AppDataSource
+  .initialize()
   .then(() => {
     console.log('successfully connected!!')
     const r = repl.start('> ')
     r.setupHistory('.repl_history', (err, repl) => {
       if (err) console.warn(err)
     })
-    r.context.getRepository = getRepository
+    r.context.getRepository = AppDataSource.getRepository
     const patterns = ['src/**/*.entity.ts', 'src/**/*.service.ts']
     patterns.forEach(pattern => {
       glob(pattern, {}, (err, fileNames) => {

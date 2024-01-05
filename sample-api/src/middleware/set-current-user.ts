@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
-import { getRepository } from 'typeorm'
 import { User } from 'src/module/user/user.entity'
 import { decodeJwt } from 'src/lib/jwt'
+import { AppDataSource } from 'data-source'
 
 export default async (req: Request, _res: Response, next: NextFunction) => {
   const token = _getTokenFromHeader(req)
@@ -10,7 +10,7 @@ export default async (req: Request, _res: Response, next: NextFunction) => {
     const { payload } = decodeJwt(token)
     const { id, resource } = payload
     if (resource !== 'User') return next()
-    const user = await getRepository(User).findOne({ id })
+    const user = await AppDataSource.getRepository(User).findOneBy({ id })
     if (!user) return next()
     req.currentUser = user
   } catch (e) {

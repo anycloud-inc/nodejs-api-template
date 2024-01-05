@@ -1,4 +1,4 @@
-import { SelectQueryBuilder } from 'typeorm'
+import { ObjectLiteral, SelectQueryBuilder } from 'typeorm'
 import { Order } from './cursor-pagination'
 
 export interface TokenPaginationParams {
@@ -8,7 +8,7 @@ export interface TokenPaginationParams {
   order?: Order
 }
 
-export async function withTokenPagination<T>(
+export async function withTokenPagination<T extends ObjectLiteral>(
   qb: SelectQueryBuilder<T>,
   params?: TokenPaginationParams | string,
   getResult?: (qb: SelectQueryBuilder<T>) => Promise<T[]>
@@ -19,7 +19,7 @@ export async function withTokenPagination<T>(
   return await _withTokenPagination(qb, params, getResult)
 }
 
-export async function withRawTokenPagination<T>(
+export async function withRawTokenPagination<T extends ObjectLiteral>(
   qb: SelectQueryBuilder<T>,
   params?: TokenPaginationParams | string,
   getResult?: (qb: SelectQueryBuilder<T>) => Promise<T[]>
@@ -30,7 +30,7 @@ export async function withRawTokenPagination<T>(
   return await _withTokenPagination(qb, params, getResult, true)
 }
 
-async function _withTokenPagination<T>(
+async function _withTokenPagination<T extends ObjectLiteral>(
   qb: SelectQueryBuilder<T>,
   params?: TokenPaginationParams,
   getResult?: (qb: SelectQueryBuilder<T>) => Promise<T[]>,

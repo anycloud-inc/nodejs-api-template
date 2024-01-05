@@ -1,4 +1,4 @@
-import { SelectQueryBuilder } from 'typeorm'
+import { ObjectLiteral, SelectQueryBuilder } from 'typeorm'
 
 export type Order = 'ASC' | 'DESC'
 
@@ -9,7 +9,7 @@ export interface PaginationParams {
   order?: Order
 }
 
-export function addPagination<T>(
+export function addPagination<T extends ObjectLiteral>(
   qb: SelectQueryBuilder<T>,
   { cursor, isNext = true, size, order = 'DESC' }: PaginationParams
 ): SelectQueryBuilder<T> {

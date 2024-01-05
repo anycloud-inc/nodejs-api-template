@@ -5,14 +5,13 @@ import express from 'express'
 import 'reflect-metadata'
 import morgan from 'morgan'
 import cors from 'cors'
-import { createConnection } from 'typeorm'
 import logRequest from './middleware/log-request'
 import handleError from './middleware/handle-error'
 import camelizeQuery from './middleware/camelize-query'
 import logger from './lib/logger'
 import router from './router'
 import { getPendingMigrations } from './lib/typeorm-helper/get-pending-migrations'
-import ormconfig from '../ormconfig'
+import { AppDataSource } from '../data-source';
 import setCurrentUser from './middleware/set-current-user'
 
 const app = express()
@@ -31,7 +30,8 @@ app.use(handleError)
 
 process.on('unhandledRejection', logger.error)
 
-createConnection(ormconfig)
+AppDataSource
+  .initialize()
   .then(async connection => {
     if (process.env.NODE_ENV !== 'production') {
       const pendingMigrations = await getPendingMigrations(connection)
