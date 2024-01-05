@@ -38,17 +38,17 @@ export async function findWithRelations<T extends ObjectLiteral>(
 
   const names = relations.map(r => (typeof r === 'string' ? r : r.name))
 
-  const relationItems: { [key: string]: boolean } = {};
+  const toOneRelationsFindOptions: { [key: string]: boolean } = {};
   names.forEach(n => {
     if (toOneRelations.includes(n)) {
-      relationItems[n] = true;
+      toOneRelationsFindOptions[n] = true;
     }
   });
 
   // to-one relation を取得
   const item = await AppDataSource.getRepository(entityClass).findOne({
     where: { id: id } as FindOptionsWhere<ObjectLiteral>,
-    relations: relationItems as FindOptionsRelations<T>,
+    relations: toOneRelationsFindOptions as FindOptionsRelations<T>,
   })
   if (!item) return null
 
