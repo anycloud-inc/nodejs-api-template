@@ -1,6 +1,6 @@
-import { getRepository } from 'typeorm'
 import { RelationMetadata } from 'typeorm/metadata/RelationMetadata'
 import { RelationWithQuery } from './index'
+import { AppDataSource } from 'data-source'
 
 export async function loadRelationsManyToMany(
   meta: RelationMetadata,
@@ -14,7 +14,7 @@ export async function loadRelationsManyToMany(
 
   const qb =
     typeof relation === 'string' || relation.qb == null
-      ? getRepository(meta.type).createQueryBuilder(name)
+      ? AppDataSource.getRepository(meta.type).createQueryBuilder(name)
       : relation.qb
 
   const entityIds = entities.map(x => x.id)

@@ -1,6 +1,6 @@
-import { ConnectionOptions, LoggerOptions } from 'typeorm'
+import { DataSource, LoggerOptions } from 'typeorm';
 
-const ormconfig: ConnectionOptions = {
+export const AppDataSource = new DataSource({
   type: 'mysql',
   host: process.env.DB_HOST || 'db',
   port: process.env.DB_PORT != null ? parseInt(process.env.DB_PORT) : 3306,
@@ -17,15 +17,10 @@ const ormconfig: ConnectionOptions = {
   entities: [process.env.DB_TYPEORM_ENTITIES || 'src/**/*.entity.ts'],
   migrations: [process.env.DB_TYPEORM_MIGRATIONS || 'src/migration/**/*.ts'],
   subscribers: [process.env.DB_TYPEORM_SUBSCRIBERS || 'src/subscriber/**/*.ts'],
-  cli: {
-    entitiesDir: 'src/entity',
-    migrationsDir: 'src/migration',
-    subscribersDir: 'src/subscriber',
-  },
   extra: {
     charset: 'utf8mb4',
     socketPath: process.env.DB_SOCKET_PATH,
     connectionLimit: process.env.DB_CONNECTION_LIMIT || 10,
   },
-}
-export default ormconfig
+  
+});

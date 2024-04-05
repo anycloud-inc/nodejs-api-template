@@ -8,7 +8,7 @@ services:
       - ./sample-api:/usr/local/sample-api
     working_dir: /usr/local/sample-api
     tty: true
-    entrypoint: "/bin/sh -c 'yarn install; yarn typeorm migration:run; yarn dev'"
+    entrypoint: "/bin/sh -c 'yarn install; yarn typeorm migration:run -d ./data-source.ts; yarn dev'"
     depends_on:
       - db
   db:

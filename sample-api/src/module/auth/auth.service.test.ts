@@ -1,7 +1,7 @@
 import { LoginError, ValidationError } from '../../error'
-import { getRepository } from 'typeorm'
 import { User } from '../user/user.entity'
 import { authService } from './auth.service'
+import { AppDataSource } from 'data-source'
 
 describe('authService', () => {
   describe('signup', () => {
@@ -11,7 +11,7 @@ describe('authService', () => {
         password: 'hogehoge',
       })
       // DBにレコードが作成されていることを確認
-      expect(await getRepository(User).count()).toBe(1)
+      expect(await AppDataSource.getRepository(User).count()).toBe(1)
       // パスワードが暗号化されていることを確認
       expect(user.password).not.toBe('hogehoge')
     })
